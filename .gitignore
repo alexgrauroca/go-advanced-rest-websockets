@@ -2,3 +2,5 @@ vendor
 *.log
 main
 .idea
+scripts/local/*
+!scripts/local/.gitkeep
