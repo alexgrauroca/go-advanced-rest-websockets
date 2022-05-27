@@ -49,13 +49,14 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 				ExpiresAt: time.Now().Add(2 * time.Hour * 24).Unix(),
 			},
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, err := token.SignedString([]byte(s.Config().JWTSecret))
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(LoginResponse{
 			Token: tokenString,
