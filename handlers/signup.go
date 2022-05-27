@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"go-advanced-rest-websockets/helpers"
 	"go-advanced-rest-websockets/models"
 	"go-advanced-rest-websockets/repository"
 	"go-advanced-rest-websockets/server"
 	"net/http"
 
-	"github.com/segmentio/ksuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -42,7 +42,7 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
-		id, err := ksuid.NewRandom()
+		id, err := helpers.GenerateId()
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,7 +52,7 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 		var user = models.User{
 			Email:    request.Email,
 			Password: string(hashedPassword),
-			Id:       id.String(),
+			Id:       id,
 		}
 		err = repository.InsertUser(r.Context(), &user)
 

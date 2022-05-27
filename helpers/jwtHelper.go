@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"go-advanced-rest-websockets/models"
+	"go-advanced-rest-websockets/repository"
 	"go-advanced-rest-websockets/server"
 	"net/http"
 	"strings"
@@ -20,4 +21,26 @@ func GetJWTAuthorizationInfo(s server.Server, w http.ResponseWriter, r *http.Req
 	}
 
 	return token, err
+}
+
+func GetUserByJWT(s server.Server, w http.ResponseWriter, r *http.Request) (*models.User, error) {
+	token, err := GetJWTAuthorizationInfo(s, w, r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(*models.AppClaims); ok && token.Valid {
+		user, err := repository.GetUserById(r.Context(), claims.UserId)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return nil, err
+		}
+
+		return user, nil
+	}
+
+	http.Error(w, err.Error(), http.StatusInternalServerError)
+	return nil, err
 }
