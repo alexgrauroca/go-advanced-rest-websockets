@@ -58,8 +58,7 @@ func InsertPostHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(PostResponse{
+		helpers.HttpJsonResponse(w, PostResponse{
 			Id:          post.Id,
 			PostContent: post.PostContent,
 		})
@@ -73,10 +72,15 @@ func GetPostByIdHandler(s server.Server) http.HandlerFunc {
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(post)
+		if len(post.Id) == 0 {
+			http.Error(w, "post not found", http.StatusNotFound)
+			return
+		}
+
+		helpers.HttpJsonResponse(w, post)
 	}
 }
 
@@ -108,9 +112,29 @@ func UpdatePostHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(PostUpdateResponse{
+		helpers.HttpJsonResponse(w, PostUpdateResponse{
 			Message: "Post updated",
+		})
+	}
+}
+
+func DeletePostHandler(s server.Server) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := helpers.GetUserByJWT(s, w, r)
+
+		if err != nil {
+			return
+		}
+
+		params := mux.Vars(r)
+		err = repository.DeletePostById(r.Context(), params["id"], user.Id)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		helpers.HttpJsonResponse(w, PostUpdateResponse{
+			Message: "Post deleted",
 		})
 	}
 }

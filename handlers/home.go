@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"encoding/json"
+	"go-advanced-rest-websockets/helpers"
 	"go-advanced-rest-websockets/server"
 	"net/http"
 )
@@ -13,9 +13,8 @@ type HomeResponse struct {
 
 func HomeHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(HomeResponse{
+		helpers.HttpJsonResponse(w, HomeResponse{
 			Message: "Welcome to Platzi Go",
 			Status:  true,
 		})

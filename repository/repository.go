@@ -13,6 +13,7 @@ type Repository interface {
 	InsertPost(ctx context.Context, post *models.Post) error
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 	UpdatePost(ctx context.Context, post *models.Post) error
+	DeletePostById(ctx context.Context, id string, userId string) error
 
 	Close() error
 }

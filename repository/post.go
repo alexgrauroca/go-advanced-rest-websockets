@@ -16,3 +16,7 @@ func GetPostById(ctx context.Context, id string) (*models.Post, error) {
 func UpdatePost(ctx context.Context, post *models.Post) error {
 	return implementation.UpdatePost(ctx, post)
 }
+
+func DeletePostById(ctx context.Context, id string, userId string) error {
+	return implementation.DeletePostById(ctx, id, userId)
+}

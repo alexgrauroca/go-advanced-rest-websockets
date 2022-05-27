@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"go-advanced-rest-websockets/helpers"
 	"go-advanced-rest-websockets/models"
 	"go-advanced-rest-websockets/repository"
 	"go-advanced-rest-websockets/server"
@@ -57,8 +58,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(LoginResponse{
+		helpers.HttpJsonResponse(w, LoginResponse{
 			Token: tokenString,
 		})
 	}

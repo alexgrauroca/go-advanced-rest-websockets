@@ -61,8 +61,7 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(SignUpResponse{
+		helpers.HttpJsonResponse(w, SignUpResponse{
 			Id:    user.Id,
 			Email: user.Email,
 		})
