@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-advanced-rest-websockets/helpers"
 	"go-advanced-rest-websockets/models"
 	"go-advanced-rest-websockets/repository"
 	"go-advanced-rest-websockets/server"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -136,5 +139,59 @@ func DeletePostHandler(s server.Server) http.HandlerFunc {
 		helpers.HttpJsonResponse(w, PostUpdateResponse{
 			Message: "Post deleted",
 		})
+	}
+}
+
+func ListPostHandler(s server.Server) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		queryString := r.URL.Query()
+		// limit and page default params
+		var limit uint64 = 10
+		var page uint64 = 0
+		var err error
+
+		if queryString.Has("limit") {
+			limit, err = strconv.ParseUint(queryString.Get("limit"), 10, 64)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			maxLimit, err := strconv.ParseUint(os.Getenv("MAX_LIMIT"), 10, 64)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if limit > maxLimit {
+				http.Error(w, fmt.Sprintf("max limit of %d results reached", maxLimit), http.StatusBadRequest)
+				return
+			}
+		}
+
+		if queryString.Has("page") {
+			page, err = strconv.ParseUint(queryString.Get("page"), 10, 64)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		posts, err := repository.ListPost(r.Context(), limit, page)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if len(posts) == 0 {
+			http.Error(w, "posts not found", http.StatusNotFound)
+			return
+		}
+
+		helpers.HttpJsonResponse(w, posts)
 	}
 }

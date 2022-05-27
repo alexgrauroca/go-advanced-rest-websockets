@@ -20,3 +20,7 @@ func UpdatePost(ctx context.Context, post *models.Post) error {
 func DeletePostById(ctx context.Context, id string, userId string) error {
 	return implementation.DeletePostById(ctx, id, userId)
 }
+
+func ListPost(ctx context.Context, limit uint64, page uint64) ([]*models.Post, error) {
+	return implementation.ListPost(ctx, limit, page)
+}

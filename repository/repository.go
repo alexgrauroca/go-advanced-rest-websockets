@@ -14,6 +14,7 @@ type Repository interface {
 	GetPostById(ctx context.Context, id string) (*models.Post, error)
 	UpdatePost(ctx context.Context, post *models.Post) error
 	DeletePostById(ctx context.Context, id string, userId string) error
+	ListPost(ctx context.Context, limit uint64, page uint64) ([]*models.Post, error)
 
 	Close() error
 }
