@@ -154,7 +154,7 @@ func ListPostHandler(s server.Server) http.HandlerFunc {
 			limit, err = strconv.ParseUint(queryString.Get("limit"), 10, 64)
 
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
@@ -175,7 +175,7 @@ func ListPostHandler(s server.Server) http.HandlerFunc {
 			page, err = strconv.ParseUint(queryString.Get("page"), 10, 64)
 
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 		}
