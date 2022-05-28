@@ -12,7 +12,7 @@ import (
 
 func GetJWTAuthorizationInfo(s server.Server, w http.ResponseWriter, r *http.Request) (*jwt.Token, error) {
 	tokenString := strings.TrimSpace(r.Header.Get("Authorization"))
-	token, err := jwt.ParseWithClaims(tokenString, &models.AppClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.AppClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(s.Config().JWTSecret), nil
 	})
 

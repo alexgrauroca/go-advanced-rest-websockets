@@ -61,6 +61,13 @@ func InsertPostHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 
+		// Broadcast message to all clients connected to the WS
+		var postMessage = models.WebSocketMessage{
+			Type:    "Post_Created",
+			Payload: post,
+		}
+		s.Hub().Broadcast(postMessage, nil)
+
 		helpers.HttpJsonResponse(w, PostResponse{
 			Id:          post.Id,
 			PostContent: post.PostContent,

@@ -3,6 +3,7 @@ package server
 import (
 	"go-advanced-rest-websockets/database"
 	"go-advanced-rest-websockets/repository"
+	"go-advanced-rest-websockets/websockets"
 	"log"
 	"net/http"
 
@@ -12,10 +13,15 @@ import (
 type Broker struct {
 	config *Config
 	router *mux.Router
+	hub    *websockets.Hub
 }
 
 func (b *Broker) Config() *Config {
 	return b.config
+}
+
+func (b *Broker) Hub() *websockets.Hub {
+	return b.hub
 }
 
 func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
@@ -30,6 +36,7 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 		log.Fatal("Error connecting to db: ", err)
 	}
 
+	go b.hub.Run()
 	repository.SetRepository(repo)
 
 	log.Println("Starting server on port", config.Port)

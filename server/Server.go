@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"errors"
+	"go-advanced-rest-websockets/websockets"
 
 	"github.com/gorilla/mux"
 )
 
 type Server interface {
 	Config() *Config
+	Hub() *websockets.Hub
 }
 
 func NewServer(ctx context.Context, config *Config) (*Broker, error) {
@@ -27,6 +29,7 @@ func NewServer(ctx context.Context, config *Config) (*Broker, error) {
 	broker := &Broker{
 		config: config,
 		router: mux.NewRouter(),
+		hub:    websockets.NewHub(),
 	}
 
 	return broker, nil
