@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"log"
 	"net/http"
 	"sync"
 
@@ -27,5 +28,70 @@ func NewHub() *Hub {
 		registrer:  make(chan *Client),
 		unregister: make(chan *Client),
 		mutex:      &sync.Mutex{},
+	}
+}
+
+func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
+	socket, err := upgrader.Upgrade(w, r, nil)
+
+	if err != nil {
+		log.Panicln(err)
+		http.Error(w, "could not open websocket connection", http.StatusBadRequest)
+		return
+	}
+
+	client := NewClient(hub, socket)
+	hub.registrer <- client
+
+	go client.Write()
+}
+
+func (hub *Hub) Run() {
+	for {
+		select {
+		case client := <-hub.registrer:
+			hub.onConnect(client)
+		case client := <-hub.unregister:
+			hub.onDisconnect(client)
+		}
+	}
+}
+
+func (hub *Hub) onConnect(client *Client) {
+	log.Println("Client connected", client.socket.RemoteAddr())
+
+	hub.mutex.Lock()
+	defer hub.mutex.Unlock()
+
+	client.id = client.socket.RemoteAddr().String()
+	hub.clients = append(hub.clients, client)
+}
+
+func (hub *Hub) onDisconnect(client *Client) {
+	log.Println("Client disconnected", client.socket.RemoteAddr())
+	client.socket.Close()
+
+	hub.mutex.Lock()
+	defer hub.mutex.Unlock()
+
+	clientId := client.id
+	i := -1
+
+	for j := 0; j < len(hub.clients); j++ {
+		hc := hub.clients[i]
+
+		if hc.id == clientId {
+			i = j
+			break
+		}
+	}
+
+	if i > -1 {
+		newLen := len(hub.clients) - 1
+
+		copy(hub.clients[i:], hub.clients[i+1:])
+
+		hub.clients[newLen] = nil
+		hub.clients = hub.clients[:newLen]
 	}
 }
