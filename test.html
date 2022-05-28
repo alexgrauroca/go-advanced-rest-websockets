@@ -25,6 +25,12 @@
         }).then((json) => {
             console.log(json)
         })
+
+        let ws = new WebSocket("ws://localhost:5050/ws")
+        
+        ws.onopen = () => { console.log("connected to host") }
+        ws.onmessage = (event) => { console.log(event.data ) }
+        ws.onerror = (event) => { console.log("Error " + error.data) }
     </script>
 </body>
 </html>
