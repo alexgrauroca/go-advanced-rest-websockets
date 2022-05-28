@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WS testing</title>
+    <style>
+        body {
+            background-color: black;
+            color: #CCC;
+        }
+    </style>
+</head>
+<body>
+    <h1>Take a look into your console</h1>
+    <script>
+        fetch("http://localhost:5050/posts", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyOWwyTk1ic3RPQmxhUWRxaTdIZTU3Zm1PNEUiLCJleHAiOjE2NTM4NDYxMTZ9.o9s0LgCkDZ75XeC2Uzuvhv9N4eBO34Lo0neDeH3ixvI",
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((json) => {
+            console.log(json)
+        })
+    </script>
+</body>
+</html>

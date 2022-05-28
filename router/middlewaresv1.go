@@ -7,6 +7,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func addMiddlewares(s server.Server, r *mux.Router) {
-	r.Use(middlewares.LogRequestMiddleware(s))
+func addMiddlewaresV1(s server.Server, r *mux.Router) {
+	r.Use(middlewares.CheckAuthMiddleware(s))
 }

@@ -10,4 +10,5 @@ func BindRoutes(s server.Server, r *mux.Router) {
 	addMiddlewares(s, r)
 	addRoutes(s, r)
 	BindWebsockets(s, r)
+	BindRoutesV1(s, r)
 }
